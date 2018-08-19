@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-from exporter import *
+from export_messages import *
 from api import *
 from options import *
-from html_exporter import *
-from json_exporter import *
+from html_serializer import *
+from json_serializer import *
+from progress import *
 
 
 def fetch_all_dialogs(api):
@@ -25,16 +26,17 @@ if not api.initialize():
 
 
 options = Options()
+progress = Progress()
 
 
 exporters = []
 
 if options.arguments.person is not None:
-    exporters = [DialogExporter(api, 'user', options.arguments.person, options)]
+    exporters = [ExportMessages(api, 'user', options.arguments.person, options)]
 elif options.arguments.chat is not None:
-    exporters = [DialogExporter(api, 'chat', options.arguments.chat, options)]
+    exporters = [ExportMessages(api, 'chat', options.arguments.chat, options)]
 elif options.arguments.group is not None:
-    exporters = [DialogExporter(api, 'group', options.arguments.group, options)]
+    exporters = [ExportMessages(api, 'group', options.arguments.group, options)]
 else:
     sys.stdout.write('You have not provided any specific dialogs to export, assuming you want to export them all...\n')
     sys.stdout.write('Enumerating your dialogs...\n')
@@ -45,9 +47,9 @@ else:
 
         if 'chat_id' in last_msg:
             # this is a group chat
-            exporter = DialogExporter(api, 'chat', last_msg['chat_id'], options)
+            exporter = ExportMessages(api, 'chat', last_msg['chat_id'], options)
         else:
-            exporter = DialogExporter(api, 'user', last_msg['user_id'], options)
+            exporter = ExportMessages(api, 'user', last_msg['user_id'], options)
 
         exporters.append(exporter)
 
@@ -57,18 +59,16 @@ if not options.arguments.docs:
 sys.stdout.write('Exporting {0} dialog{1}\n'.format(len(exporters), 's' if len(exporters) > 1 else ''))
 progress.total_stages = len(exporters)
 for exp in exporters:
-    exported_json = exp.export()
-
-    format_exporter = None
+    serializer = None
     if options.output_format == 'json':
-        format_exporter = JSONExporter(options)
+        serializer = JSONSerializer(options)
     elif options.output_format == 'html':
-        format_exporter = HTMLExporter(options)
+        serializer = HTMLSerializer(options)
     else:
         raise RuntimeError("Unknown format")
 
-    exported_data = format_exporter.export(exported_json, progress)
-    with codecs.open(os.path.join(options.output_dir, str(exp.id) + "." + format_exporter.extension), "w", encoding="utf-8") as f:
+    exported_data = serializer.serialize(exp, progress)
+    with codecs.open(os.path.join(options.output_dir, str(exp.id) + "." + serializer.extension), "w", encoding="utf-8") as f:
         f.write(exported_data['text'])
 
     if 'files' in exported_data:
