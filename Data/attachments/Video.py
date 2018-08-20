@@ -1,5 +1,5 @@
 from utils import *
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Video(Attachment):
@@ -9,7 +9,7 @@ class Video(Attachment):
         context.add_user(video.get('owner_id', 0), self)
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'description': video.get('description', ''),
             'url': "https://vk.com/video%s_%s" % (video.get('owner_id', 0), video.get('id', 0)),
             'title': video.get("title", ''),
@@ -30,8 +30,8 @@ class Video(Attachment):
 
         uploader_profile = ''
         owner_id = attach['owner_id']
-        if owner_id in ctx.input_json['users']:
-            uploader_profile = '<a href="{link}">{name}</a>'.format(**ctx.input_json['users'][owner_id])
+        if ctx.user_exists(owner_id):
+            uploader_profile = '<a href="{link}">{name}</a>'.format(**ctx.get_user(owner_id))
 
         args['uploader_profile'] = uploader_profile
 

@@ -61,9 +61,9 @@ progress.total_stages = len(exporters)
 for exp in exporters:
     serializer = None
     if options.output_format == 'json':
-        serializer = JSONSerializer(options)
+        serializer = JSONSerializer(api, options)
     elif options.output_format == 'html':
-        serializer = HTMLSerializer(options)
+        serializer = HTMLSerializer(api, options)
     else:
         raise RuntimeError("Unknown format")
 

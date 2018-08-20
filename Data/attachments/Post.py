@@ -1,5 +1,5 @@
 from utils import *
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Post(Attachment):
@@ -30,7 +30,8 @@ class Post(Attachment):
         }
 
         if "attachments" in wall:
-            exported_post['attachments'] = self.attachments_to_json(context.next_level(), wall['attachments'])
+            exported_post['attachments'] = self.attachments_to_json(context.next_level(), wall['attachments'],
+                                                                    [self.progress, self.id, self.options])
 
         if "copy_history" in wall:
             # this is a repost
@@ -58,7 +59,7 @@ class Post(Attachment):
         attach_block = ''
         if 'attachments' in attach:
             for attachment in attach['attachments']:
-                attach_block += self.attachments_to_html(ctx, attachment)
+                attach_block += self.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)
@@ -66,8 +67,8 @@ class Post(Attachment):
         args['attach_block'] = attach_block
 
         head_block = ''
-        if 'from_id' in attach and attach['from_id'] in ctx.input_json['users']:
-            user_data = ctx.input_json['users'][attach['from_id']]
+        if 'from_id' in attach and ctx.user_exists(attach['from_id']):
+            user_data = ctx.get_user(attach['from_id'])
             if 'filename' in user_data:
                 head_block = '''
                 <div class="post-head">

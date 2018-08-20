@@ -1,22 +1,19 @@
 from utils import *
-import codecs
 import json
+from .Data import Data
 from .attachments.Attachment import Attachment
 
 
 MSG_MERGE_TIMEOUT = 60 * 5 # two sequential messages from the same sender are going to be merged into one if sent in this time range
 
 
-class Message:
-    def __init__(self, api, dlg_type, dlg_id, options):
-        self.api = api
-        self.type = dlg_type
-        self.id = dlg_id
-        self.attach_dir = str(self.id)
-        self.output_dir = options.output_dir
-        self.options = options
+class Message(Data):
+    def __init__(self, msg, progress, dlg_id,  options):
+        super().__init__(progress, dlg_id, options)
+        self.vk_msg = msg
 
-    def to_json(self, ctx, vk_msg):
+    def to_json(self, ctx):
+        vk_msg = self.vk_msg
         # write message head
         exported_msg = {
             'date': vk_msg.get('date', 0),
@@ -42,11 +39,12 @@ class Message:
         if len(vk_msg.get('fwd_messages', [])) > 0:
             exported_msg['forwarded'] = []
             for fwd_msg in vk_msg['fwd_messages']:
-                exported_msg['forwarded'].append(self.to_json(ctx, fwd_msg))
+                exported_msg['forwarded'].append(__class__(fwd_msg, self.progress, self.id, self.options).to_json(ctx))
 
         # handle attachments
         if 'attachments' in vk_msg:
-            exported_msg['attachments'] = Attachment.attachments_to_json(ctx, vk_msg['attachments'])
+            exported_msg['attachments'] = \
+                Attachment.attachments_to_json(ctx, vk_msg['attachments'], [self.progress, self.id, self.options])
 
         if 'action' in vk_msg:
             exported_msg['action'] = vk_msg['action']
@@ -84,19 +82,19 @@ class Message:
             elif action_mid == msg['sender']['id']:
                 return 'Left the chat'
             else:
-                return 'Kicked user <span class="new-chat-title">{name}</span>'.format(name=ctx.input_json['users'].get(action_mid)['name'])
+                return 'Kicked user <span class="new-chat-title">{name}</span>'.format(name=ctx.get_user(action_mid)['name'])
         else:
             return action_text_dict.get(action, '')
 
     def _to_html_action_message(self, ctx, msg):
         ctx.prev_merge_sender = None
 
-        sender = ctx.input_json['users'][msg['sender']['id']]
+        sender = ctx.get_user(msg['sender']['id'])
 
         attach_block = ''
         if 'attachments' in msg:
             for attachment in msg['attachments']:
-                attach_block += Attachment.attachments_to_html(ctx, attachment)
+                attach_block += Attachment.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)
@@ -133,7 +131,7 @@ class Message:
             extra_classes.append('msg--edited')
 
         sender_id = msg['sender']['id']
-        sender = ctx.input_json['users'][sender_id]
+        sender = ctx.get_user(sender_id)
 
         # Forward block
         fwd_block = ''
@@ -149,7 +147,7 @@ class Message:
         attach_block = ''
         if 'attachments' in msg:
             for attachment in msg['attachments']:
-                attach_block += self.export_attachment(ctx, attachment)
+                attach_block += Attachment.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)

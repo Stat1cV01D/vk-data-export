@@ -1,11 +1,11 @@
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Photo(Attachment):
     def to_json(self, context, photo):
         downloaded = self.download_image(photo)
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'filename': downloaded,
             'url': self.find_largest(photo),
             'description': photo.get('text', ''),

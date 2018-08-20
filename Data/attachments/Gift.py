@@ -1,4 +1,4 @@
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Gift(Attachment):
@@ -6,7 +6,7 @@ class Gift(Attachment):
         gift_thumb = self.download_image(gift, 'thumb_')
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'thumbnail': gift_thumb
         }
 

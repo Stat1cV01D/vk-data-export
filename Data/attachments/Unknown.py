@@ -1,7 +1,7 @@
 # We don't inherit Attachment class so it won't be in "known" list
 class Unknown:
-    def __init__(self, options):
-        self.options = options
+    def __init__(self):
+        pass
 
     def to_json(self, context, attachment):
         return {

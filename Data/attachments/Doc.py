@@ -1,5 +1,5 @@
 from utils import *
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Doc(Attachment):
@@ -15,10 +15,10 @@ class Doc(Attachment):
             if url:
                 downloaded = self.download_file(url, filename, False, doc.get('size', -1))
             else:
-                progress.error("Document [%s] is no more available, skipping\n" % doc.get('title', ''))
+                self.progress.error("Document [%s] is no more available, skipping\n" % doc.get('title', ''))
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'filename': downloaded,
             'url': url,
             'title': doc.get('title', ''),

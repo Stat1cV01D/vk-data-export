@@ -1,5 +1,5 @@
 from utils import *
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Voice(Attachment):
@@ -13,10 +13,10 @@ class Voice(Attachment):
             if url:
                 downloaded = self.download_file(url, filename)
             else:
-                progress.error("Voice message is no more available, skipping\n")
+                self.progress.error("Voice message is no more available, skipping\n")
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'filename': downloaded,
             'url': url,
             'duration': msg_preview.get('duration', 0),

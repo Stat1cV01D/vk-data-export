@@ -1,4 +1,4 @@
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Sticker(Attachment):
@@ -15,7 +15,7 @@ class Sticker(Attachment):
         downloaded = self.download_file(url, str(sticker.get('sticker_id', 0)), True) if largest is not None else None
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'filename': downloaded,
             'url': url
         }

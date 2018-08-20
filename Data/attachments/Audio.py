@@ -1,5 +1,5 @@
 from utils import *
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Audio(Attachment):
@@ -10,13 +10,13 @@ class Audio(Attachment):
         downloaded = None
         if self.options.arguments.audio and context.depth <= self.options.arguments.audio_depth:
             if not url or "audio_api_unavailable.mp3" in url:
-                progress.error("Audio file [%s - %s] is no more available, skipping\n"
-                               % (audio.get('artist', ''), audio.get('title', '')))
+                self.progress.error("Audio file [%s - %s] is no more available, skipping\n"
+                                    % (audio.get('artist', ''), audio.get('title', '')))
             else:
                 downloaded = self.download_file(url, filename)
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'artist': audio.get('artist', ''),
             'title': audio.get('title', ''),
             'duration': audio.get('duration', 0),

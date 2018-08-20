@@ -1,4 +1,4 @@
-from . import Attachment
+from .Attachment import Attachment
 
 
 class Link(Attachment):
@@ -8,7 +8,7 @@ class Link(Attachment):
             downloaded = self.download_image(link['photo'])
 
         return {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'url': link.get('url', ''),
             'title': link.get('title', ''),
             'caption': link.get('caption', ''),
