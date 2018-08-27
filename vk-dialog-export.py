@@ -8,6 +8,18 @@ from html_serializer import *
 from json_serializer import *
 from progress import *
 
+# Needed for __subclasses__() to work
+from Data.attachments.Attachment import Attachment
+from Data.attachments.Audio import Audio
+from Data.attachments.Doc import Doc
+from Data.attachments.Gift import Gift
+from Data.attachments.Link import Link
+from Data.attachments.Photo import Photo
+from Data.attachments.Sticker import Sticker
+from Data.attachments.Video import Video
+from Data.attachments.Voice import Voice
+from Data.attachments.Wall import Wall
+
 
 def fetch_all_dialogs(api):
     offset = 0

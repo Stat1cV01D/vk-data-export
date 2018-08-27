@@ -29,7 +29,6 @@ class ExportMessages:
             for msg in messages['items']:
                 yield (msg, messages['count'])
             offset += len(messages['items'])
-            break
 
     def get_data(self, progress, use_existing=True):
         if not self.messages or not use_existing:

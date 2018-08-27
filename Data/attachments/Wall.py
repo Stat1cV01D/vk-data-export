@@ -2,9 +2,9 @@ from utils import *
 from .Attachment import Attachment
 
 
-class Post(Attachment):
-    def __init__(self, full_export=False):
-        super().__init__()
+class Wall(Attachment):
+    def __init__(self, progress, dlg_id, options, full_export=False):
+        super().__init__(progress, dlg_id, options)
         self.full_export = full_export
 
     def to_json(self, context, wall):
@@ -15,7 +15,7 @@ class Post(Attachment):
             context.add_user(wall['to_id'], self)
 
         exported_post = {
-            'type': self.__name__,
+            'type': __class__.__name__.lower(),
             'from_id': wall.get('from_id', 0),
             'to_id': wall.get('to_id', 0),
             'post_type': wall.get('post_type', ''),
@@ -39,9 +39,9 @@ class Post(Attachment):
                 exported_post['repost'] = []
                 post_type = repost.get('post_type', '')
                 if post_type == "post":
-                    exported_post['repost'].append(self.handle_wall(context.next_level(), repost))
+                    exported_post['repost'].append(self.to_json(context.next_level(), repost))
                 else:
-                    progress.error("No handler for post type: %s\n" % post_type)
+                    self.progress.error("No handler for post type: %s\n" % post_type)
 
         if self.full_export and "comments" in wall:
             pass
@@ -58,8 +58,7 @@ class Post(Attachment):
 
         attach_block = ''
         if 'attachments' in attach:
-            for attachment in attach['attachments']:
-                attach_block += self.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
+            attach_block += self.attachments_to_html(ctx, attach['attachments'], [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)

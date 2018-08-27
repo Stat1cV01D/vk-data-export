@@ -8,7 +8,10 @@ def fmt_time(secs):
 
 
 def fmt_timestamp(timestamp):
-    return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    try:
+        return datetime.datetime.fromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
+    except OSError:
+        return "n/a"
 
 
 def fmt_date_diff(diff, add_sign=False):

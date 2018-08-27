@@ -64,7 +64,7 @@ class VkApi:
                 else:
                     return reply['response']
             except Exception as error:
-                sys.stdout.write('Got error while requesting api method %s (%s), trying to resume in 5 sec...\n' % (method, str(error)))
+                sys.stdout.write('Error calling api method %s (%s), resuming in 5 sec...\n' % (method, str(error)))
                 time.sleep(5)
 
         raise RuntimeError('Failed to call the API\n')

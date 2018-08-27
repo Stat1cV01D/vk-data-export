@@ -93,8 +93,7 @@ class Message(Data):
 
         attach_block = ''
         if 'attachments' in msg:
-            for attachment in msg['attachments']:
-                attach_block += Attachment.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
+            attach_block += Attachment.attachments_to_html(ctx, msg['attachments'], [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)
@@ -146,8 +145,7 @@ class Message(Data):
         # Attachments block
         attach_block = ''
         if 'attachments' in msg:
-            for attachment in msg['attachments']:
-                attach_block += Attachment.attachments_to_html(ctx, attachment, [self.progress, self.id, self.options])
+            attach_block += Attachment.attachments_to_html(ctx, msg['attachments'], [self.progress, self.id, self.options])
 
         if len(attach_block) > 0:
             attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)

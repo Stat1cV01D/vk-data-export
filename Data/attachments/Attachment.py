@@ -9,14 +9,14 @@ class Attachment(Data):
     @classmethod
     def get_attachment_classes(cls, attachments, ctr_args):
         known_types = {}
-        for sub in cls.__subclasses__():
+        for sub in Attachment.__subclasses__():
             known_types[sub.__name__.lower()] = sub
 
         for att in attachments:
             if att['type'] in known_types.keys():
                 obj = known_types[att['type']](*ctr_args)
             else:
-                obj = Unknown()
+                obj = Unknown(att)
             yield obj, att
 
     @classmethod
@@ -29,8 +29,8 @@ class Attachment(Data):
 
     @classmethod
     def attachments_to_html(cls, context, attachments, ctr_args):
-        results = []
+        results = ""
         for obj, att in cls.get_attachment_classes(attachments, ctr_args):
-            results.append(obj.to_html(context, att))
+            results += obj.to_html(context, att)
 
         return results
