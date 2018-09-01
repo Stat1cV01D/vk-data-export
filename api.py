@@ -50,7 +50,7 @@ class VkApi:
 
     def call(self, method, params):
         params.append(("access_token", self.token))
-        params.append(("v", "5.74"))
+        params.append(("v", "5.84"))
         url = "https://api.vk.com/method/%s?%s" % (method, urllib.parse.urlencode(params))
 
         for j in range(API_RETRY_COUNT):

@@ -50,3 +50,12 @@ class UserFetcher:
                     'filename': downloaded
                 }
         return self.cache[user_id]
+
+
+class Serializer(object):
+    @property
+    def extension(self):
+        return "(no extension)"
+
+    def serialize(self, data_container, progress):
+        pass

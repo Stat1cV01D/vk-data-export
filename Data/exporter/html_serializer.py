@@ -1,4 +1,4 @@
-from exporter import *
+from .exporter import *
 import codecs
 
 
@@ -31,7 +31,8 @@ class HTMLSerializerContext:
     def user_exists(self, user_id):
         return user_id in self.export_ctx.users
 
-class HTMLSerializer:
+
+class HTMLSerializer(Serializer):
     def __init__(self, api, options):
         self.options = options
         self.api = api
@@ -66,7 +67,7 @@ class HTMLSerializer:
         </head>
         <body>
         '''.format(link_block=link_block))
-        data_container.get_html_body(self.export_ctx, self.serializer_ctx, progress)
+        data_container.get_html_body(self.serializer_ctx, progress)
         self.serializer_ctx.output.append('</body></html>')
 
         return {

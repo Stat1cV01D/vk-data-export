@@ -60,7 +60,7 @@ def has_downloaded_image(download_dir, filename):
         return os.path.splitext(existing_file)[0] == filename
 
     try:
-        downloaded_file = next(f for f in os.listdir(download_dir) if is_downloaded_image(f))
+        downloaded_file = next(f.name for f in os.scandir(download_dir) if is_downloaded_image(f.name))
         if os.stat(os.path.join(download_dir, downloaded_file)).st_size > 0:
             return downloaded_file
         return None

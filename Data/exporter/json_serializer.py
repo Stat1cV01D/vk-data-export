@@ -1,7 +1,8 @@
 import json
+from .exporter import Serializer
 
 
-class JSONSerializer:
+class JSONSerializer(Serializer):
     def __init__(self, api, options):
         self.api = api
         self.options = options
@@ -18,4 +19,3 @@ class JSONSerializer:
         return {
             'text': json.dumps(json_input, ensure_ascii=False, indent=2)
         }
-

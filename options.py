@@ -10,6 +10,10 @@ class Options:
     def __init__(self):
         parser = argparse.ArgumentParser(description="Exports VK.COM messages into HTML files. "
                                                      "Login and password should be specified in config.ini file")
+        parser.add_argument('--export-dialog', type=bool, dest="export_dialog",
+                            help="Export dialogs (all or specified via --person, --chat or --group)")
+        parser.add_argument('--export-wall', type=bool, dest="export_wall",
+                            help="Export wall posts")
         parser.add_argument('--person', type=int, dest="person", help="ID of person whose dialog you want to export")
         parser.add_argument('--chat', type=int, dest="chat", help="ID of group chat which you want to export")
         parser.add_argument('--group', type=int, dest="group", help="ID of public group whose dialog you want to export")

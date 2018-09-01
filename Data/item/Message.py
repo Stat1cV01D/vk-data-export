@@ -1,7 +1,7 @@
 from utils import *
 import json
-from .Data import Data
-from .attachments.Attachment import Attachment
+from data.item.Data import Data
+from data.attachments.Attachment import Attachment
 
 
 MSG_MERGE_TIMEOUT = 60 * 5 # two sequential messages from the same sender are going to be merged into one if sent in this time range
@@ -17,7 +17,7 @@ class Message(Data):
         # write message head
         exported_msg = {
             'date': vk_msg.get('date', 0),
-            'message': vk_msg.get('body', ''),
+            'message': vk_msg.get('text', ''),
             'is_important': vk_msg.get('important', False),
             'is_updated': 'update_time' in vk_msg and vk_msg['update_time']
         }
@@ -48,6 +48,8 @@ class Message(Data):
 
         if 'action' in vk_msg:
             exported_msg['action'] = vk_msg['action']
+            if 'member_id' in vk_msg['action']:
+                ctx.add_user(vk_msg['action']['member_id'], self)
 
         if 'action_text' in vk_msg:
             exported_msg['action_text'] = vk_msg['action_text']
@@ -81,8 +83,10 @@ class Message(Data):
                 return 'Kicked user'
             elif action_mid == msg['sender']['id']:
                 return 'Left the chat'
-            else:
+            elif action_mid in ctx.input_json['users']:
                 return 'Kicked user <span class="new-chat-title">{name}</span>'.format(name=ctx.get_user(action_mid)['name'])
+            else:
+                return 'Kicked user id {user_id}'.format(user_id=action_mid)
         else:
             return action_text_dict.get(action, '')
 
@@ -93,10 +97,7 @@ class Message(Data):
 
         attach_block = ''
         if 'attachments' in msg:
-            attach_block += Attachment.attachments_to_html(ctx, msg['attachments'], [self.progress, self.id, self.options])
-
-        if len(attach_block) > 0:
-            attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)
+            attach_block = Attachment.attachments_to_html(ctx, msg['attachments'], [self.progress, self.id, self.options])
 
         return '''
         <div class="msg msg--level-{level} msg--action msg-action" data-json='{json}'>

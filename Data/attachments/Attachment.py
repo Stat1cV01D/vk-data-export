@@ -1,4 +1,4 @@
-from Data.Data import Data
+from data.item.Data import Data
 from .Unknown import Unknown
 
 
@@ -29,8 +29,11 @@ class Attachment(Data):
 
     @classmethod
     def attachments_to_html(cls, context, attachments, ctr_args):
-        results = ""
+        attach_block = ''
         for obj, att in cls.get_attachment_classes(attachments, ctr_args):
-            results += obj.to_html(context, att)
+            attach_block += obj.to_html(context, att)
 
-        return results
+        if len(attach_block) > 0:
+            attach_block = '<div class="attachments">{attach_block}</div>'.format(attach_block=attach_block)
+
+        return attach_block

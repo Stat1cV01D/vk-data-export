@@ -43,12 +43,6 @@ class Wall(Attachment):
                 else:
                     self.progress.error("No handler for post type: %s\n" % post_type)
 
-        if self.full_export and "comments" in wall:
-            pass
-
-        if self.full_export and "likes" in wall:
-            pass
-
         return exported_post
 
     def to_html(self, ctx, attach):
@@ -58,10 +52,7 @@ class Wall(Attachment):
 
         attach_block = ''
         if 'attachments' in attach:
-            attach_block += self.attachments_to_html(ctx, attach['attachments'], [self.progress, self.id, self.options])
-
-        if len(attach_block) > 0:
-            attach_block = '<div class="msg-attachments">{attach_block}</div>'.format(attach_block=attach_block)
+            attach_block = self.attachments_to_html(ctx, attach['attachments'], [self.progress, self.id, self.options])
 
         args['attach_block'] = attach_block
 
